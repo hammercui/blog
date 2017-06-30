@@ -68,3 +68,96 @@ react-native bundle --entry-file index.ios.js --bundle-output ./ios/bundle/com.a
 
 # Android打包
 
+## step1:命令行导出bundle包和图片资源
+
+```
+react-native bundle --entry-file index.android.js --bundle-output ./android/app/src/main/assets/com.aztec.android.jsbundle --platform android --assets-dest ./android/app/src/main/res/ --dev false
+
+```
+
+
+这里跟ios不同，就不要再拷贝 
+
+## step2:修改MainApplication.java
+
+`MainApplication.java`新增debug判断
+
+
+```
+public class MainApplication extends Application implements ReactApplication {
+
+  private  boolean isDebug = true;
+
+  private  ReactNativeHost mReactNativeHost;
+
+  @Override
+  public ReactNativeHost getReactNativeHost() {
+    return mReactNativeHost;
+  }
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    isDebug = this.isApkInDebug(this);
+    this.createReactNativeHost();
+    SoLoader.init(this, /* native exopackage */ false);
+  }
+
+  /**
+   * 判断当前应用是否是debug状态
+   */
+  private  boolean isApkInDebug(Context context) {
+    try {
+      ApplicationInfo info = context.getApplicationInfo();
+      return (info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+  private void  createReactNativeHost(){
+    mReactNativeHost = new ReactNativeHost(this) {
+
+      @Nullable
+      @Override
+      protected String getBundleAssetName() {
+        return "com.aztec.android.jsbundle";
+      }
+
+      @Nullable
+      @Override
+      protected String getJSBundleFile() {
+        return null;
+      }
+
+      @Override
+      public boolean getUseDeveloperSupport() {
+        //return BuildConfig.DEBUG;
+        return  isDebug;
+      }
+
+      @Override
+      protected List<ReactPackage> getPackages() {
+        return Arrays.<ReactPackage>asList(
+                new MainReactPackage(),
+                new RNSpinkitPackage(),
+                new VectorIconsPackage()
+        );
+      }
+
+
+
+    };
+  }
+}
+
+```
+
+## step3:执行build-release
+
+生成apk，此时的apk就已经包含了打包后的资源
+
+
+
+
