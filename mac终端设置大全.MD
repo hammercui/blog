@@ -21,6 +21,22 @@ npm config set disturl https://npm.taobao.org/dist --global
 
 查看注册的站点
 
+```
+npm get registry
+```
+不过更推荐使用yarn来管理依赖
+
+```
+npm install -g yarn
+```
+yarn的命令如下：
+
+* yarn：= npm install
+* yarn add [packageName] = npm install [packageName]
+* yarn global = npm -g
+* 
+
+
 ## git命令行设置代理
 
 ```
